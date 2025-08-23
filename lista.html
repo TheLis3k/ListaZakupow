@@ -4,335 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moja Lista Zakupów</title>
-    <style>
-        /* ===== STYLE MOBILE FIRST ===== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            background-color: #d2b48c; /* Brązowe tło jak notatnik */
-            color: #5c3d2e; /* Ciemny brązowy kolor tekstu */
-            line-height: 1.6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 10px;
-            background-image: linear-gradient(rgba(210, 180, 140, 0.7), rgba(210, 180, 140, 0.7)), 
-                              url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 L100,0 L100,100 L0,100 Z' fill='none' stroke='%239c7c5c' stroke-width='0.5'/%3E%3C/svg%3E");
-        }
-        
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-        
-        /* ===== NAGŁÓWEK ===== */
-        header {
-            background-color: #8B4513; /* Ciemny brąz */
-            color: #fff8dc; /* Kremowy tekst */
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        
-        h1 {
-            margin-bottom: 8px;
-            font-size: 1.5rem;
-        }
-        
-        /* ===== SEKCJE FORMULARZY I LISTY ===== */
-        .auth-forms, .shopping-list {
-            background-color: #fff8dc; /* Żółta/kremowa kartka */
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            margin-bottom: 15px;
-            border: 1px solid #d2b48c;
-        }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #5c3d2e;
-        }
-        
-        input[type="text"], 
-        input[type="password"], 
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d2b48c;
-            border-radius: 4px;
-            font-size: 16px;
-            background-color: rgba(255, 255, 255, 0.7);
-        }
-        
-        /* ===== PRZYCISKI ===== */
-        button {
-            color: #5c3d2e;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            font-weight: bold;
-        }
-        
-        .btn-primary {
-            background-color: #d2b48c; /* Brązowy */
-            color: #5c3d2e;
-        }
-        
-        .btn-primary:hover {
-            background-color: #b8860b; /* Ciemniejszy brąz */
-            color: white;
-        }
-        
-        .btn-secondary {
-            background-color: #a0522d; /* Ciemniejszy brąz */
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #8B4513; /* Jeszcze ciemniejszy brąz */
-        }
-        
-        .btn-danger {
-            background-color: #cd5c5c; /* Czerwony/bordowy */
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #8b0000; /* Ciemny bordowy */
-        }
-        
-        /* ===== ZAKŁADKI (LOGOWANIE/REJESTRACJA) ===== */
-        .tabs {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #d2b48c;
-        }
-        
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background-color: #f5deb3;
-            cursor: pointer;
-            border-radius: 4px 4px 0 0;
-            font-weight: bold;
-        }
-        
-        .tab.active {
-            background-color: #fff8dc;
-            border-bottom: 3px solid #8B4513;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* ===== FORMULARZ DODAWANIA PRODUKTU ===== */
-        .add-item-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .add-item-form input, 
-        .add-item-form select {
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        /* ===== LISTA PRODUKTÓW ===== */
-        .shopping-items {
-            list-style-type: none;
-        }
-        
-        .shopping-items li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #d2b48c;
-            background-color: rgba(255, 248, 220, 0.5);
-            margin-bottom: 5px;
-            border-radius: 4px;
-        }
-        
-        .shopping-items li:last-child {
-            border-bottom: none;
-        }
-        
-        .item-completed {
-            text-decoration: line-through;
-            color: #a9a9a9;
-        }
-        
-        .item-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .item-name {
-            font-weight: bold;
-            margin-bottom: 3px;
-        }
-        
-        .item-quantity {
-            font-size: 0.9rem;
-            color: #8B4513;
-        }
-        
-        .item-actions {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .item-actions button {
-            padding: 5px 8px;
-            font-size: 14px;
-        }
-        
-        /* ===== POWIADOMIENIA ===== */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px;
-            background-color: #8B4513;
-            color: white;
-            border-radius: 4px;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* ===== PRZYCISKI AKCJI ===== */
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .action-buttons button {
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        /* ===== STYLY DLA WIĘKSZYCH EKRANÓW ===== */
-        @media (min-width: 600px) {
-            body {
-                padding: 20px;
-            }
-            
-            .container {
-                max-width: 800px;
-                margin: 0 auto;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .add-item-form {
-                flex-wrap: nowrap;
-            }
-            
-            .item-details {
-                flex-direction: row;
-                align-items: center;
-                gap: 15px;
-            }
-            
-            .item-quantity {
-                font-size: 1rem;
-            }
-        }
-        
-        /* ===== DODATKOWE EFEKTY WIZUALNE ===== */
-        .paper-shadow {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .empty-list {
-            text-align: center;
-            padding: 20px;
-            color: #a9a9a9;
-            font-style: italic;
-        }
-    </style>
+    <link rel="stylesheet" href="lista.css">
 </head>
 <body>
-    <!-- ===== KONTENER GŁÓWNY ===== -->
+    <!-- ===== OVERLAY FOR SETTINGS PANEL ===== -->
+    <div id="overlay" class="overlay"></div>
+    
+    <!-- ===== ACTION MODAL ===== -->
+    <div id="action-modal" class="action-modal paper-shadow">
+        <h3>Wybierz akcję</h3>
+        <div class="action-modal-buttons">
+            <button id="modal-edit" class="btn-primary">Edytuj</button>
+            <button id="modal-delete" class="btn-danger">Usuń</button>
+            <button id="modal-cancel" class="btn-secondary">Anuluj</button>
+        </div>
+    </div>
+    
+    <!-- ===== SETTINGS PANEL ===== -->
+    <div id="settings-panel" class="settings-panel paper-shadow">
+        <div class="settings-header">
+            <h3>Ustawienia</h3>
+            <button class="settings-close">&times;</button>
+        </div>
+        
+        <div class="settings-option">
+            <label for="theme-select">Motyw:</label>
+            <select id="theme-select">
+                <option value="notes">Notes</option>
+                <option value="modern">Modern</option>
+                <option value="darkmodern">Dark Modern</option>
+            </select>
+        </div>
+        
+        <div class="settings-option">
+            <button id="btn-remove-checked" class="btn-danger" style="width: 100%; margin-bottom: 15px;">Usuń zaznaczone</button>
+            <button id="btn-clear-list" class="btn-danger" style="width: 100%; margin-bottom: 15px;">Wyczyść listę</button>
+        </div>
+        
+        <button id="btn-logout" class="btn-danger" style="width: 100%;">Wyloguj</button>
+    </div>
+    
+    <!-- ===== MAIN CONTAINER ===== -->
     <div class="container">
         <header class="paper-shadow">
-            <h1>Moja Lista Zakupów</h1>
-            <!-- Wyświetla aktualnie zalogowanego użytkownika -->
-            <p>Zalogowany jako: <span id="current-user">Nie zalogowano</span></p>
+            <div class="header-content">
+                <h1>Moja Lista Zakupów</h1>
+                <p>Zalogowany jako: <span id="current-user">Nie zalogowano</span></p>
+            </div>
+            <button id="btn-settings" class="btn-settings" style="display: none;">⚙️</button>
         </header>
         
-        <!-- ===== SEKCJA AUTORYZACJI ===== -->
+        <!-- ===== AUTHENTICATION SECTION ===== -->
         <div id="auth-section" class="auth-forms paper-shadow">
-            <!-- Przełączanie między logowaniem a rejestracją -->
+            <!-- Tabs for login/register -->
             <div class="tabs">
                 <div class="tab active" data-tab="login">Logowanie</div>
                 <div class="tab" data-tab="register">Rejestracja</div>
             </div>
             
-            <!-- ===== FORMULARZ LOGOWANIA ===== -->
+            <!-- ===== LOGIN FORM ===== -->
             <div id="login-tab" class="tab-content active">
                 <div class="form-group">
                     <label for="login-username">Login:</label>
-                    <input type="text" id="login-username" placeholder="Wpisz swój login">
+                    <input type="text" id="login-username" placeholder="Wpisz swój login" autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label for="login-password">Hasło:</label>
-                    <input type="password" id="login-password" placeholder="Wpisz swoje hasło">
+                    <input type="password" id="login-password" placeholder="Wpisz swoje hasło" autocomplete="current-password">
                 </div>
-                <button id="btn-login" class="btn-primary">Zaloguj się</button>
+                <div class="security-indicator">
+                    <span id="login-security-icon" class="secure-icon">✓</span>
+                    <span>Połączenie szyfrowane</span>
+                </div>
+                <button id="btn-login" class="btn-primary">
+                    <span id="login-text">Zaloguj się</span>
+                    <span id="login-loading" class="loading" style="display: none;"></span>
+                </button>
             </div>
             
-            <!-- ===== FORMULARZ REJESTRACJI ===== -->
+            <!-- ===== REGISTRATION FORM ===== -->
             <div id="register-tab" class="tab-content">
                 <div class="form-group">
                     <label for="register-username">Login:</label>
-                    <input type="text" id="register-username" placeholder="Wpisz login">
+                    <input type="text" id="register-username" placeholder="Wpisz login" autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label for="register-password">Hasło:</label>
-                    <input type="password" id="register-password" placeholder="Wpisz hasło">
+                    <input type="password" id="register-password" placeholder="Wpisz hasło" autocomplete="new-password">
+                    <div class="password-strength">
+                        <div id="password-strength-bar" class="password-strength-bar"></div>
+                    </div>
+                    <div id="password-feedback" class="password-feedback"></div>
                 </div>
                 <div class="form-group">
                     <label for="register-confirm">Potwierdź hasło:</label>
-                    <input type="password" id="register-confirm" placeholder="Powtórz hasło">
+                    <input type="password" id="register-confirm" placeholder="Powtórz hasło" autocomplete="new-password">
                 </div>
-                <button id="btn-register" class="btn-primary">Zarejestruj się</button>
+                <div class="security-indicator">
+                    <span class="secure-icon">✓</span>
+                    <span>Twoje dane są szyfrowane</span>
+                </div>
+                <button id="btn-register" class="btn-primary">
+                    <span id="register-text">Zarejestruj się</span>
+                    <span id="register-loading" class="loading" style="display: none;"></span>
+                </button>
             </div>
         </div>
         
-        <!-- ===== GŁÓWNA SEKCJA APLIKACJI (WIDOCZNA PO ZALOGOWANIU) ===== -->
+        <!-- ===== MAIN APP SECTION (VISIBLE AFTER LOGIN) ===== -->
         <div id="app-section" class="shopping-list paper-shadow" style="display: none;">
-            <!-- Formularz dodawania nowych produktów -->
+            <!-- Form for adding new products -->
             <div class="add-item-form">
                 <input type="text" id="new-item" placeholder="Nazwa produktu...">
                 <input type="number" id="new-quantity" placeholder="Ilość" min="1" value="1">
@@ -345,368 +126,25 @@
                     <option value="opak">opak</option>
                     <option value="inna">inna</option>
                 </select>
+                <textarea id="new-description" class="description-field" placeholder="Opcjonalny opis..."></textarea>
                 <button id="btn-add-item" class="btn-primary">Dodaj</button>
             </div>
             
-            <!-- Lista produktów (dynamicznie wypełniana przez JavaScript) -->
+            <!-- Products list (dynamically populated by JavaScript) -->
             <ul id="shopping-items" class="shopping-items">
-                <!-- Elementy listy będą dodawane dynamicznie -->
+                <!-- List items will be added dynamically -->
             </ul>
             
-            <!-- Przyciski zarządzania listą i wylogowania -->
+            <!-- List management buttons -->
             <div class="action-buttons">
                 <button id="btn-refresh" class="btn-secondary">Odśwież</button>
-                <button id="btn-save" class="btn-primary">Zapisz zmiany</button>
-                <button id="btn-logout" class="btn-danger">Wyloguj</button>
             </div>
         </div>
         
-        <!-- Element do wyświetlania powiadomień -->
+        <!-- Notification element -->
         <div id="notification" class="notification"></div>
     </div>
 
-    <script>
-        // ===== INICJALIZACJA APLIKACJI PO ZAŁADOWANIU STRONY =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- POBRANIE ELEMENTÓW DOM ---
-            const authSection = document.getElementById('auth-section');
-            const appSection = document.getElementById('app-section');
-            const currentUserSpan = document.getElementById('current-user');
-            const loginTab = document.getElementById('login-tab');
-            const registerTab = document.getElementById('register-tab');
-            const tabs = document.querySelectorAll('.tab');
-            const loginUsername = document.getElementById('login-username');
-            const loginPassword = document.getElementById('login-password');
-            const registerUsername = document.getElementById('register-username');
-            const registerPassword = document.getElementById('register-password');
-            const registerConfirm = document.getElementById('register-confirm');
-            const btnLogin = document.getElementById('btn-login');
-            const btnRegister = document.getElementById('btn-register');
-            const btnLogout = document.getElementById('btn-logout');
-            const newItemInput = document.getElementById('new-item');
-            const newQuantityInput = document.getElementById('new-quantity');
-            const newUnitSelect = document.getElementById('new-unit');
-            const btnAddItem = document.getElementById('btn-add-item');
-            const shoppingItems = document.getElementById('shopping-items');
-            const btnSave = document.getElementById('btn-save');
-            const btnRefresh = document.getElementById('btn-refresh');
-            const notification = document.getElementById('notification');
-            
-            // --- ZMIENNE STANU APLIKACJI ---
-            let currentUser = null; // Przechowuje dane aktualnego użytkownika
-            let shoppingList = []; // Przechowuje listę zakupów użytkownika
-            
-            // --- SPRAWDZENIE CZY UŻYTKOWNIK JEST ZALOGOWANY ---
-            checkAuth();
-            
-            // --- OBSŁUGA ZAKŁADEK (LOGOWANIE/REJESTRACJA) ---
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.getAttribute('data-tab');
-                    
-                    // Usunięcie klasy active ze wszystkich zakładek
-                    tabs.forEach(t => t.classList.remove('active'));
-                    // Dodanie klasy active do klikniętej zakładki
-                    tab.classList.add('active');
-                    
-                    // Ukrycie wszystkich zawartości zakładek
-                    loginTab.classList.remove('active');
-                    registerTab.classList.remove('active');
-                    
-                    // Pokazanie zawartości odpowiedniej zakładki
-                    if (tabName === 'login') {
-                        loginTab.classList.add('active');
-                    } else {
-                        registerTab.classList.add('active');
-                    }
-                });
-            });
-            
-            // --- PRZYPISANIE OBSŁUGI ZDARZEŃ ---
-            btnRegister.addEventListener('click', register);
-            btnLogin.addEventListener('click', login);
-            btnLogout.addEventListener('click', logout);
-            btnAddItem.addEventListener('click', addItem);
-            // Dodawanie produktu po naciśnięciu Enter
-            newItemInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') addItem();
-            });
-            btnSave.addEventListener('click', saveList);
-            btnRefresh.addEventListener('click', refreshList);
-            
-            // ===== FUNKCJE APLIKACJI =====
-            
-            /**
-             * Wyświetla powiadomienie na ekranie
-             * @param {string} message - Treść powiadomienia
-             * @param {boolean} isError - Czy to błąd (zmienia kolor tła)
-             */
-            function showNotification(message, isError = false) {
-                notification.textContent = message;
-                notification.style.backgroundColor = isError ? '#cd5c5c' : '#8B4513';
-                notification.style.display = 'block';
-                
-                // Ukrycie powiadomienia po 3 sekundach
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 3000);
-            }
-            
-            /**
-             * Sprawdza czy użytkownik jest już zalogowany (na podstawie localStorage)
-             */
-            function checkAuth() {
-                const user = localStorage.getItem('currentUser');
-                if (user) {
-                    currentUser = JSON.parse(user);
-                    currentUserSpan.textContent = currentUser.username;
-                    authSection.style.display = 'none';
-                    appSection.style.display = 'block';
-                    loadShoppingList(); // Wczytanie listy zakupów użytkownika
-                }
-            }
-            
-            /**
-             * Rejestracja nowego użytkownika
-             */
-            function register() {
-                const username = registerUsername.value.trim();
-                const password = registerPassword.value;
-                const confirm = registerConfirm.value;
-                
-                // Walidacja pól formularza
-                if (!username || !password) {
-                    showNotification('Login i hasło są wymagane', true);
-                    return;
-                }
-                
-                if (password !== confirm) {
-                    showNotification('Hasła nie są identyczne', true);
-                    return;
-                }
-                
-                // Sprawdzenie czy użytkownik już istnieje
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                if (users.find(user => user.username === username)) {
-                    showNotification('Użytkownik o podanym loginie już istnieje', true);
-                    return;
-                }
-                
-                // Dodanie nowego użytkownika
-                users.push({ username, password });
-                localStorage.setItem('users', JSON.stringify(users));
-                
-                showNotification('Konto zostało utworzone. Możesz się zalogować.');
-                
-                // Przełączenie na zakładkę logowania i wyczyszczenie pól
-                tabs[0].click();
-                registerUsername.value = '';
-                registerPassword.value = '';
-                registerConfirm.value = '';
-            }
-            
-            /**
-             * Logowanie użytkownika
-             */
-            function login() {
-                const username = loginUsername.value.trim();
-                const password = loginPassword.value;
-                
-                // Walidacja pól formularza
-                if (!username || !password) {
-                    showNotification('Login i hasło są wymagane', true);
-                    return;
-                }
-                
-                // Sprawdzenie danych logowania
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                const user = users.find(user => user.username === username && user.password === password);
-                
-                if (!user) {
-                    showNotification('Nieprawidłowy login lub hasło', true);
-                    return;
-                }
-                
-                // Zalogowanie użytkownika
-                currentUser = { username: user.username };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                // Aktualizacja interfejsu
-                currentUserSpan.textContent = currentUser.username;
-                authSection.style.display = 'none';
-                appSection.style.display = 'block';
-                
-                // Wyczyszczenie pól formularza
-                loginUsername.value = '';
-                loginPassword.value = '';
-                
-                // Wczytanie listy zakupów
-                loadShoppingList();
-                showNotification('Zalogowano pomyślnie');
-            }
-            
-            /**
-             * Wylogowanie użytkownika
-             */
-            function logout() {
-                currentUser = null;
-                localStorage.removeItem('currentUser');
-                
-                // Aktualizacja interfejsu
-                currentUserSpan.textContent = 'Nie zalogowano';
-                authSection.style.display = 'block';
-                appSection.style.display = 'none';
-                
-                // Wyczyść listę zakupów
-                shoppingList = [];
-                renderShoppingList();
-                
-                showNotification('Wylogowano pomyślnie');
-            }
-            
-            /**
-             * Wczytuje listę zakupów z localStorage
-             */
-            function loadShoppingList() {
-                if (!currentUser) return;
-                
-                const userData = JSON.parse(localStorage.getItem(`user_${currentUser.username}`) || '{}');
-                shoppingList = userData.shoppingList || [];
-                renderShoppingList();
-            }
-            
-            /**
-             * Zapisuje listę zakupów do localStorage
-             */
-            function saveList() {
-                if (!currentUser) return;
-                
-                const userData = JSON.parse(localStorage.getItem(`user_${currentUser.username}`) || '{}');
-                userData.shoppingList = shoppingList;
-                localStorage.setItem(`user_${currentUser.username}`, JSON.stringify(userData));
-                
-                showNotification('Lista zapisana pomyślnie');
-            }
-            
-            /**
-             * Odświeża listę zakupów (funkcja przygotowana na przyszłe rozszerzenia)
-             */
-            function refreshList() {
-                loadShoppingList();
-                showNotification('Lista odświeżona');
-            }
-            
-            /**
-             * Dodaje nowy produkt do listy
-             */
-            function addItem() {
-                const itemText = newItemInput.value.trim();
-                const itemQuantity = newQuantityInput.value;
-                const itemUnit = newUnitSelect.value;
-                
-                // Walidacja pól formularza
-                if (!itemText) {
-                    showNotification('Nazwa produktu jest wymagana', true);
-                    return;
-                }
-                
-                if (!itemQuantity || itemQuantity <= 0) {
-                    showNotification('Ilość musi być większa niż 0', true);
-                    return;
-                }
-                
-                // Dodanie nowego produktu z unikalnym ID (timestamp)
-                shoppingList.push({
-                    id: Date.now(),
-                    text: itemText,
-                    quantity: itemQuantity,
-                    unit: itemUnit,
-                    completed: false
-                });
-                
-                // Wyczyszczenie pól i odświeżenie listy
-                newItemInput.value = '';
-                newQuantityInput.value = '1';
-                newUnitSelect.value = 'szt';
-                renderShoppingList();
-                saveList(); // Automatyczne zapisanie zmian
-            }
-            
-            /**
-             * Zmienia status produktu (kupiony/niekupiony)
-             * @param {number} id - ID produktu do zmiany
-             */
-            function toggleItem(id) {
-                const item = shoppingList.find(item => item.id === id);
-                if (item) {
-                    item.completed = !item.completed;
-                    renderShoppingList();
-                }
-            }
-            
-            /**
-             * Usuwa produkt z listy
-             * @param {number} id - ID produktu do usunięcia
-             */
-            function removeItem(id) {
-                shoppingList = shoppingList.filter(item => item.id !== id);
-                renderShoppingList();
-            }
-            
-            /**
-             * Renderuje listę zakupów w interfejsie
-             */
-            function renderShoppingList() {
-                shoppingItems.innerHTML = '';
-                
-                // Komunikat gdy lista jest pusta
-                if (shoppingList.length === 0) {
-                    shoppingItems.innerHTML = '<li class="empty-list">Twoja lista zakupów jest pusta</li>';
-                    return;
-                }
-                
-                // Tworzenie elementów listy dla każdego produktu
-                shoppingList.forEach(item => {
-                    const li = document.createElement('li');
-                    
-                    // Kontener z detalami produktu
-                    const itemDetails = document.createElement('div');
-                    itemDetails.className = 'item-details';
-                    
-                    // Nazwa produktu z możliwością oznaczania jako kupiony
-                    const itemName = document.createElement('span');
-                    itemName.textContent = item.text;
-                    itemName.className = `item-name ${item.completed ? 'item-completed' : ''}`;
-                    itemName.addEventListener('click', () => toggleItem(item.id));
-                    
-                    // Ilość i jednostka produktu
-                    const itemQuantity = document.createElement('span');
-                    itemQuantity.textContent = `${item.quantity} ${item.unit}`;
-                    itemQuantity.className = 'item-quantity';
-                    
-                    // Przyciski akcji dla produktu
-                    const itemActions = document.createElement('div');
-                    itemActions.className = 'item-actions';
-                    
-                    // Przycisk usuwania
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Usuń';
-                    deleteBtn.className = 'btn-danger';
-                    deleteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Zapobiega wywołaniu zdarzenia na rodzicu
-                        removeItem(item.id);
-                    });
-                    
-                    // Dodanie elementów do DOM
-                    itemDetails.appendChild(itemName);
-                    itemDetails.appendChild(itemQuantity);
-                    itemActions.appendChild(deleteBtn);
-                    li.appendChild(itemDetails);
-                    li.appendChild(itemActions);
-                    shoppingItems.appendChild(li);
-                });
-            }
-        });
-    </script>
+    <script src="lista.js"></script>
 </body>
 </html>

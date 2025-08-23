@@ -1,0 +1,936 @@
+/* ===== VARIABLES & RESET ===== */
+:root {
+    --primary-brown: #8B4513;
+    --light-brown: #d2b48c;
+    --dark-brown: #5c3d2e;
+    --cream: #fff8dc;
+    --error-red: #cd5c5c;
+    --success-green: #4caf50;
+    --warning-orange: #ff9800;
+    --info-blue: #2196f3;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    
+    /* Modern theme variables */
+    --modern-primary: #2E7D32;
+    --modern-secondary: #4CAF50;
+    --modern-background: #f8f9fa;
+    --modern-surface: #ffffff;
+    --modern-text: #202124;
+    --modern-text-secondary: #5f6368;
+    
+    /* Dark Modern theme variables */
+    --darkmodern-primary: #388E3C;
+    --darkmodern-secondary: #4CAF50;
+    --darkmodern-background: #202124;
+    --darkmodern-surface: #303134;
+    --darkmodern-text: #e8eaed;
+    --darkmodern-text-secondary: #9aa0a6;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--light-brown);
+    color: var(--dark-brown);
+    line-height: 1.6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px;
+    background-image: 
+        linear-gradient(rgba(210, 180, 140, 0.7), rgba(210, 180, 140, 0.7)), 
+        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0 L100,0 L100,100 L0,100 Z' fill='none' stroke='%239c7c5c' stroke-width='0.5'/%3E%3C/svg%3E");
+    min-height: 100vh;
+    transition: var(--transition);
+}
+
+/* Modern theme */
+body.modern-theme {
+    background-color: var(--modern-background);
+    color: var(--modern-text);
+    background-image: none;
+}
+
+/* Dark Modern theme */
+body.darkmodern-theme {
+    background-color: var(--darkmodern-background);
+    color: var(--darkmodern-text);
+    background-image: none;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+header {
+    background: linear-gradient(135deg, var(--primary-brown) 0%, #6b2f09 100%);
+    color: var(--cream);
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Modern header */
+body.modern-theme header {
+    background: linear-gradient(135deg, var(--modern-primary) 0%, #3367d6 100%);
+    color: white;
+}
+
+/* Dark Modern header */
+body.darkmodern-theme header {
+    background: linear-gradient(135deg, var(--darkmodern-primary) 0%, #1e58c6 100%);
+    color: var(--darkmodern-text);
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+}
+
+.header-content {
+    flex: 1;
+}
+
+h1 {
+    margin-bottom: 8px;
+    font-size: 1.8rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== SETTINGS BUTTON ===== */
+.btn-settings {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.btn-settings:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== AUTH & SHOPPING SECTIONS ===== */
+.auth-forms, .shopping-list {
+    background-color: var(--cream);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    border: 1px solid var(--light-brown);
+    transition: var(--transition);
+}
+
+/* Modern sections */
+body.modern-theme .auth-forms, 
+body.modern-theme .shopping-list {
+    background-color: var(--modern-surface);
+    border: 1px solid #dadce0;
+}
+
+/* Dark Modern sections */
+body.darkmodern-theme .auth-forms, 
+body.darkmodern-theme .shopping-list {
+    background-color: var(--darkmodern-surface);
+    border: 1px solid #5f6368;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark-brown);
+    font-size: 0.95rem;
+}
+
+/* Modern labels */
+body.modern-theme label {
+    color: var(--modern-text);
+}
+
+/* Dark Modern labels */
+body.darkmodern-theme label {
+    color: var(--darkmodern-text);
+}
+
+input[type="text"], 
+input[type="password"], 
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #d2b48c;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: var(--transition);
+}
+
+/* Modern inputs */
+body.modern-theme input[type="text"], 
+body.modern-theme input[type="password"], 
+body.modern-theme input[type="number"],
+body.modern-theme textarea,
+body.modern-theme select {
+    border: 1px solid #dadce0;
+    background-color: white;
+}
+
+/* Dark Modern inputs */
+body.darkmodern-theme input[type="text"], 
+body.darkmodern-theme input[type="password"], 
+body.darkmodern-theme input[type="number"],
+body.darkmodern-theme textarea,
+body.darkmodern-theme select {
+    border: 1px solid #5f6368;
+    background-color: #303134;
+    color: var(--darkmodern-text);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-brown);
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);
+}
+
+/* Modern focus */
+body.modern-theme input:focus, 
+body.modern-theme textarea:focus, 
+body.modern-theme select:focus {
+    border-color: var(--modern-primary);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+/* Dark Modern focus */
+body.darkmodern-theme input:focus, 
+body.darkmodern-theme textarea:focus, 
+body.darkmodern-theme select:focus {
+    border-color: var(--darkmodern-primary);
+    box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.2);
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* ===== BUTTONS ===== */
+button {
+    color: var(--dark-brown);
+    border: none;
+    padding: 12px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: var(--transition);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-primary {
+    background: linear-gradient(to bottom, var(--light-brown), #c19a6b);
+    color: var(--dark-brown);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to bottom, #c19a6b, #b8860b);
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Modern primary button */
+body.modern-theme .btn-primary {
+    background: linear-gradient(to bottom, var(--modern-primary), #1B5E20);
+    color: white;
+}
+
+body.modern-theme .btn-primary:hover {
+    background: linear-gradient(to bottom, #1B5E20, #0D3010);
+}
+
+/* Dark Modern primary button */
+body.darkmodern-theme .btn-primary {
+    background: linear-gradient(to bottom, var(--darkmodern-primary), #1e58c6);
+    color: var(--darkmodern-text);
+}
+
+body.darkmodern-theme .btn-primary:hover {
+    background: linear-gradient(to bottom, #1e58c6, #1543a1);
+}
+
+.btn-secondary {
+    background: linear-gradient(to bottom, #a0522d, #8b4513);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(to bottom, #8b4513, #6b2f09);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Modern secondary button */
+body.modern-theme .btn-secondary {
+    background: linear-gradient(to bottom, #5f6368, #3c4043);
+    color: white;
+}
+
+body.modern-theme .btn-secondary:hover {
+    background: linear-gradient(to bottom, #3c4043, #202124);
+}
+
+/* Dark Modern secondary button */
+body.darkmodern-theme .btn-secondary {
+    background: linear-gradient(to bottom, #5f6368, #3c4043);
+    color: white;
+}
+
+body.darkmodern-theme .btn-secondary:hover {
+    background: linear-gradient(to bottom, #3c4043, #202124);
+}
+
+.btn-danger {
+    background: linear-gradient(to bottom, var(--error-red), #b74747);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(to bottom, #b74747, #8b0000);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.btn-edit {
+    background: linear-gradient(to bottom, #5c85d6, #4a6cbe);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit:hover {
+    background: linear-gradient(to bottom, #4a6cbe, #3b5998);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* ===== TABS (LOGIN/REGISTER) ===== */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--light-brown);
+    background-color: #f5deb3;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+}
+
+/* Modern tabs */
+body.modern-theme .tabs {
+    border-bottom: 2px solid #dadce0;
+    background-color: #f1f3f4;
+}
+
+/* Dark Modern tabs */
+body.darkmodern-theme .tabs {
+    border-bottom: 2px solid #5f6368;
+    background-color: #303134;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    position: relative;
+}
+
+.tab.active {
+    background-color: var(--cream);
+    color: var(--primary-brown);
+}
+
+/* Modern active tab */
+body.modern-theme .tab.active {
+    background-color: var(--modern-surface);
+    color: var(--modern-primary);
+}
+
+/* Dark Modern active tab */
+body.darkmodern-theme .tab.active {
+    background-color: var(--darkmodern-surface);
+    color: var(--darkmodern-primary);
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--primary-brown);
+}
+
+/* Modern tab indicator */
+body.modern-theme .tab.active::after {
+    background-color: var(--modern-primary);
+}
+
+/* Dark Modern tab indicator */
+body.darkmodern-theme .tab.active::after {
+    background-color: var(--darkmodern-primary);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ===== ADD ITEM FORM ===== */
+.add-item-form {
+    display: grid;
+    grid-template-columns: 1fr 100px 100px;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: end;
+}
+
+.description-field {
+    grid-column: 1 / -1;
+}
+
+/* ===== SHOPPING LIST ===== */
+.shopping-items {
+    list-style-type: none;
+}
+
+.shopping-items li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--light-brown);
+    background-color: rgba(255, 248, 220, 0.7);
+    margin-bottom: 8px;
+    border-radius: 6px;
+    transition: var(--transition);
+    animation: slideIn 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Modern list items */
+body.modern-theme .shopping-items li {
+    border-bottom: 1px solid #dadce0;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Dark Modern list items */
+body.darkmodern-theme .shopping-items li {
+    border-bottom: 1px solid #5f6368;
+    background-color: rgba(48, 49, 52, 0.9);
+}
+
+.shopping-items li:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.shopping-items li:last-child {
+    border-bottom: none;
+}
+
+.shopping-items li.editing {
+    flex-direction: column;
+    align-items: stretch;
+    background-color: rgba(255, 248, 220, 0.9);
+}
+
+/* Modern editing item */
+body.modern-theme .shopping-items li.editing {
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Dark Modern editing item */
+body.darkmodern-theme .shopping-items li.editing {
+    background-color: rgba(48, 49, 52, 0.95);
+}
+
+.item-completed {
+    text-decoration: line-through;
+    color: #a9a9a9;
+}
+
+.item-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-name::before {
+    content: '•';
+    color: var(--primary-brown);
+}
+
+/* Modern bullet */
+body.modern-theme .item-name::before {
+    color: var(--modern-primary);
+}
+
+/* Dark Modern bullet */
+body.darkmodern-theme .item-name::before {
+    color: var(--darkmodern-primary);
+}
+
+.item-quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--primary-brown);
+    font-weight: 500;
+}
+
+/* Modern quantity container */
+body.modern-theme .item-quantity-container {
+    color: var(--modern-text-secondary);
+}
+
+/* Dark Modern quantity container */
+body.darkmodern-theme .item-quantity-container {
+    color: var(--darkmodern-text-secondary);
+}
+
+.item-description {
+    font-size: 0.85rem;
+    color: #6b5b4a;
+    margin-top: 5px;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Modern description */
+body.modern-theme .item-description {
+    color: var(--modern-text-secondary);
+}
+
+/* Dark Modern description */
+body.darkmodern-theme .item-description {
+    color: var(--darkmodern-text-secondary);
+}
+
+/* Checkbox styling */
+.item-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+/* ===== EDIT FORM ===== */
+.edit-form {
+    display: grid;
+    grid-template-columns: 1fr 100px 100px;
+    gap: 12px;
+    width: 100%;
+}
+
+.edit-description-field {
+    grid-column: 1 / -1;
+}
+
+.edit-form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 12px;
+    grid-column: 1 / -1;
+}
+
+/* ===== NOTIFICATIONS ===== */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 6px;
+    display: none;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+    color: white;
+    font-weight: 500;
+    max-width: 350px;
+    animation: slideInRight 0.3s ease;
+}
+
+.notification.success {
+    background-color: var(--success-green);
+}
+
+.notification.error {
+    background-color: var(--error-red);
+}
+
+.notification.warning {
+    background-color: var(--warning-orange);
+}
+
+.notification.info {
+    background-color: var(--info-blue);
+}
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* ===== SETTINGS PANEL ===== */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: var(--cream);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 1001;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.settings-panel.open {
+    right: 0;
+}
+
+/* Modern settings panel */
+body.modern-theme .settings-panel {
+    background-color: var(--modern-surface);
+}
+
+/* Dark Modern settings panel */
+body.darkmodern-theme .settings-panel {
+    background-color: var(--darkmodern-surface);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--light-brown);
+}
+
+/* Modern settings header */
+body.modern-theme .settings-header {
+    border-bottom: 1px solid #dadce0;
+}
+
+/* Dark Modern settings header */
+body.darkmodern-theme .settings-header {
+    border-bottom: 1px solid #5f6368;
+}
+
+.settings-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--dark-brown);
+}
+
+/* Modern close button */
+body.modern-theme .settings-close {
+    color: var(--modern-text);
+}
+
+/* Dark Modern close button */
+body.darkmodern-theme .settings-close {
+    color: var(--darkmodern-text);
+}
+
+.settings-option {
+    margin-bottom: 20px;
+}
+
+.settings-option label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.settings-option select {
+    width: 100%;
+}
+
+/* ===== OVERLAY ===== */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+}
+
+/* ===== ACTION MODAL ===== */
+.action-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1002;
+    display: none;
+    min-width: 280px;
+    text-align: center;
+}
+
+/* Dark Modern action modal */
+body.darkmodern-theme .action-modal {
+    background-color: var(--darkmodern-surface);
+    color: var(--darkmodern-text);
+}
+
+.action-modal h3 {
+    margin-bottom: 15px;
+    color: var(--dark-brown);
+}
+
+body.darkmodern-theme .action-modal h3 {
+    color: var(--darkmodern-text);
+}
+
+.action-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from { 
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== PASSWORD STRENGTH ===== */
+.password-strength {
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+    background-color: #eee;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+.strength-weak { background-color: #ff4d4d; }
+.strength-medium { background-color: #ffa64d; }
+.strength-strong { background-color: #2eb82e; }
+
+.password-feedback {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    color: #666;
+}
+
+/* ===== LOADING INDICATOR ===== */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-list {
+    text-align: center;
+    padding: 30px 20px;
+    color: #a9a9a9;
+    font-style: italic;
+}
+
+.empty-list i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+    opacity: 0.5;
+}
+
+/* ===== LARGER SCREENS ===== */
+@media (min-width: 600px) {
+    body {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .container {
+        max-width: 800px;
+        width: 100%;
+    }
+    
+    h1 {
+        font-size: 2.2rem;
+    }
+    
+    .add-item-form {
+        grid-template-columns: 1fr 120px 120px auto;
+    }
+
+    .description-field {
+        grid-column: 1 / 4;
+    }
+    
+    .item-details {
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .item-quantity-container {
+        font-size: 1rem;
+        min-width: 80px;
+        justify-content: flex-end;
+    }
+
+    .item-description {
+        margin-top: 0;
+        margin-left: 15px;
+    }
+    
+    .edit-form {
+        grid-template-columns: 1fr 120px 120px auto;
+    }
+    
+    .edit-description-field {
+        grid-column: 1 / 4;
+    }
+}
+
+/* ===== VISUAL EFFECTS ===== */
+.paper-shadow {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== SECURITY INDICATOR ===== */
+.security-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.secure-icon {
+    color: var(--success-green);
+}
