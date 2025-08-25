@@ -56,7 +56,6 @@ try {
         'username' => $username
     ]);
 } catch (PDOException $e) {
-    // Log the error instead of showing it to the user
     error_log("Database error: " . $e->getMessage());
     sendJsonResponse(['error' => 'Database error occurred'], 500);
 } catch (Exception $e) {

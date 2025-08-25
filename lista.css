@@ -338,18 +338,6 @@ body.darkmodern-theme .btn-secondary:hover {
     transform: translateY(-2px);
 }
 
-.btn-edit {
-    background: linear-gradient(to bottom, #5c85d6, #4a6cbe);
-    color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.btn-edit:hover {
-    background: linear-gradient(to bottom, #4a6cbe, #3b5998);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-}
-
 /* ===== TABS (LOGIN/REGISTER) ===== */
 .tabs {
     display: flex;
@@ -447,9 +435,6 @@ body.darkmodern-theme .tab.active::after {
 }
 
 .shopping-items li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 12px 15px;
     border-bottom: 1px solid var(--light-brown);
     background-color: rgba(255, 248, 220, 0.7);
@@ -457,8 +442,6 @@ body.darkmodern-theme .tab.active::after {
     border-radius: 6px;
     transition: var(--transition);
     animation: slideIn 0.3s ease;
-    cursor: pointer;
-    position: relative;
 }
 
 /* Modern list items */
@@ -480,22 +463,6 @@ body.darkmodern-theme .shopping-items li {
 
 .shopping-items li:last-child {
     border-bottom: none;
-}
-
-.shopping-items li.editing {
-    flex-direction: column;
-    align-items: stretch;
-    background-color: rgba(255, 248, 220, 0.9);
-}
-
-/* Modern editing item */
-body.modern-theme .shopping-items li.editing {
-    background-color: rgba(255, 255, 255, 0.95);
-}
-
-/* Dark Modern editing item */
-body.darkmodern-theme .shopping-items li.editing {
-    background-color: rgba(48, 49, 52, 0.95);
 }
 
 .item-completed {
@@ -585,25 +552,24 @@ body.darkmodern-theme .item-description {
     cursor: pointer;
 }
 
-/* ===== EDIT FORM ===== */
-.edit-form {
+/* ===== EDIT ITEM FORM (EDIT MODE) ===== */
+.edit-item-form {
     display: grid;
-    grid-template-columns: 1fr 100px 100px;
-    gap: 12px;
+    grid-template-columns: 1fr;
+    gap: 10px;
     width: 100%;
 }
 
-.edit-description-field {
-    grid-column: 1 / -1;
+.edit-item-form input,
+.edit-item-form select,
+.edit-item-form textarea {
+    margin-bottom: 0;
+    width: 100%;
 }
 
-.edit-form-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    width: 100%;
-    margin-top: 12px;
+.remove-item-btn {
     grid-column: 1 / -1;
+    margin-top: 10px;
 }
 
 /* ===== NOTIFICATIONS ===== */
@@ -743,44 +709,6 @@ body.darkmodern-theme .settings-close {
     display: none;
 }
 
-/* ===== ACTION MODAL ===== */
-.action-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    z-index: 1002;
-    display: none;
-    min-width: 280px;
-    text-align: center;
-}
-
-/* Dark Modern action modal */
-body.darkmodern-theme .action-modal {
-    background-color: var(--darkmodern-surface);
-    color: var(--darkmodern-text);
-}
-
-.action-modal h3 {
-    margin-bottom: 15px;
-    color: var(--dark-brown);
-}
-
-body.darkmodern-theme .action-modal h3 {
-    color: var(--darkmodern-text);
-}
-
-.action-modal-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
 /* ===== ANIMATIONS ===== */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -907,12 +835,15 @@ body.darkmodern-theme .action-modal h3 {
         margin-left: 15px;
     }
     
-    .edit-form {
-        grid-template-columns: 1fr 120px 120px auto;
+    .edit-item-form {
+        grid-template-columns: 1fr 100px 100px auto;
+        gap: 12px;
+        align-items: center;
     }
     
-    .edit-description-field {
-        grid-column: 1 / 4;
+    .remove-item-btn {
+        grid-column: auto;
+        margin-top: 0;
     }
 }
 
@@ -933,4 +864,398 @@ body.darkmodern-theme .action-modal h3 {
 
 .secure-icon {
     color: var(--success-green);
+}
+
+/* ===== ENHANCED STYLES ===== */
+
+/* Password strength improvements */
+.strength-very-weak {
+    background-color: #ff4d4d;
+}
+
+.strength-weak {
+    background-color: #ffa64d;
+}
+
+.strength-medium {
+    background-color: #2eb82e;
+}
+
+.strength-strong {
+    background-color: #009900;
+}
+
+/* Remember me checkbox */
+.remember-me {
+    display: flex;
+    align-items: left;
+    margin: 15px 0;
+    font-size: 0.9rem;
+}
+
+.remember-me input {
+    margin-right: 8px;
+    width: auto;
+}
+
+/* Network status indicator */
+.network-status {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 1000;
+    display: none;
+}
+
+.network-status.online {
+    background-color: var(--success-green);
+    color: white;
+    display: block;
+}
+
+.network-status.offline {
+    background-color: var(--error-red);
+    color: white;
+    display: block;
+}
+
+/* Loading states */
+.loading-state {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Mobile-first improvements */
+@media (max-width: 599px) {
+    .add-item-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Animation improvements */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.shopping-items li {
+    animation: slideIn 0.3s ease;
+}
+
+.shopping-items li:hover {
+    animation: pulse 0.5s ease;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--primary-brown);
+    outline-offset: 2px;
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    .item-completed {
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ===== DEMO FOOTER ===== */
+.demo-footer {
+    background-color: var(--cream);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--dark-brown);
+    border: 1px solid var(--light-brown);
+}
+
+/* Modern footer */
+body.modern-theme .demo-footer {
+    background-color: var(--modern-surface);
+    border: 1px solid #dadce0;
+    color: var(--modern-text-secondary);
+}
+
+/* Dark Modern footer */
+body.darkmodern-theme .demo-footer {
+    background-color: var(--darkmodern-surface);
+    border: 1px solid #5f6368;
+    color: var(--darkmodern-text-secondary);
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+.footer-content p:first-child {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.footer-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* ===== ACTION MODAL IMPROVEMENTS ===== */
+.action-modal {
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* ===== EMPTY STATE STYLES ===== */
+.empty-list {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a9a9a9;
+    font-style: italic;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.empty-list i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+    opacity: 0.5;
+}
+
+.empty-list div {
+    margin-bottom: 10px;
+}
+
+/* ===== LOADING STATES ===== */
+.loading-state {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading-state::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== NETWORK STATUS INDICATOR ===== */
+.network-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    background-color: var(--error-red);
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+    display: none;
+}
+
+.network-status.online {
+    background-color: var(--success-green);
+    display: block;
+}
+
+.network-status.offline {
+    background-color: var(--error-red);
+    display: block;
+}
+
+/* ===== IMPROVED ITEM DESCRIPTION POSITIONING ===== */
+.item-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.item-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.item-quantity-container {
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.item-description {
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b5b4a;
+    margin-top: 8px;
+    font-style: italic;
+    padding: 4px 0;
+    border-top: 1px dashed rgba(139, 69, 19, 0.2);
+}
+
+/* Modern theme description */
+body.modern-theme .item-description {
+    color: var(--modern-text-secondary);
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Modern theme description */
+body.darkmodern-theme .item-description {
+    color: var(--darkmodern-text-secondary);
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* ===== ACTION MODAL IMPROVEMENTS ===== */
+.action-modal {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* ===== ENHANCED SECURITY ===== */
+.action-modal-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.action-modal-buttons button:last-child {
+    grid-column: span 2;
+}
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media (max-width: 480px) {
+    .action-modal {
+        width: 90%;
+        max-width: 300px;
+    }
+    
+    .action-modal-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-modal-buttons button:last-child {
+        grid-column: span 1;
+    }
+}
+
+/* ===== EDIT MODE RESPONSIVENESS ===== */
+@media (max-width: 599px) {
+    .edit-item-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .remove-item-btn {
+        grid-column: 1 / -1;
+        margin-top: 10px;
+    }
+}
+
+/* ===== EDIT LIST STYLES ===== */
+.edit-item-form {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px auto;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.edit-item-name {
+    grid-column: 1;
+}
+
+.edit-item-quantity {
+    grid-column: 2;
+}
+
+.edit-item-unit {
+    grid-column: 3;
+}
+
+.edit-item-description {
+    grid-column: 1 / span 3;
+    width: 100%;
+}
+
+.remove-item-btn {
+    grid-column: 4;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* Responsive styles for edit mode */
+@media (max-width: 768px) {
+    .edit-item-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .edit-item-name,
+    .edit-item-quantity,
+    .edit-item-unit,
+    .edit-item-description,
+    .remove-item-btn {
+        grid-column: 1;
+    }
 }

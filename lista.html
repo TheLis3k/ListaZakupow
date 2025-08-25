@@ -10,16 +10,6 @@
     <!-- ===== OVERLAY FOR SETTINGS PANEL ===== -->
     <div id="overlay" class="overlay"></div>
     
-    <!-- ===== ACTION MODAL ===== -->
-    <div id="action-modal" class="action-modal paper-shadow">
-        <h3>Wybierz akcję</h3>
-        <div class="action-modal-buttons">
-            <button id="modal-edit" class="btn-primary">Edytuj</button>
-            <button id="modal-delete" class="btn-danger">Usuń</button>
-            <button id="modal-cancel" class="btn-secondary">Anuluj</button>
-        </div>
-    </div>
-    
     <!-- ===== SETTINGS PANEL ===== -->
     <div id="settings-panel" class="settings-panel paper-shadow">
         <div class="settings-header">
@@ -37,6 +27,7 @@
         </div>
         
         <div class="settings-option">
+            <button id="btn-edit-list" class="btn-primary" style="width: 100%; margin-bottom: 15px;">Edytuj listę</button>
             <button id="btn-remove-checked" class="btn-danger" style="width: 100%; margin-bottom: 15px;">Usuń zaznaczone</button>
             <button id="btn-clear-list" class="btn-danger" style="width: 100%; margin-bottom: 15px;">Wyczyść listę</button>
         </div>
@@ -80,6 +71,10 @@
                     <span id="login-text">Zaloguj się</span>
                     <span id="login-loading" class="loading" style="display: none;"></span>
                 </button>
+                <div class="remember-me">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Zapamiętaj mnie</label>
+                </div>
             </div>
             
             <!-- ===== REGISTRATION FORM ===== -->
@@ -137,12 +132,21 @@
             
             <!-- List management buttons -->
             <div class="action-buttons">
+                <button id="btn-save-changes" class="btn-primary" style="display: none;">Zapisz zmiany</button>
+                <button id="btn-cancel-edit" class="btn-secondary" style="display: none;">Anuluj edycję</button>
                 <button id="btn-refresh" class="btn-secondary">Odśwież</button>
             </div>
         </div>
         
         <!-- Notification element -->
         <div id="notification" class="notification"></div>
+
+        <footer class="demo-footer paper-shadow">
+                <div class="footer-content">
+                    <p><strong>Aplikacja demonstracyjna</strong></p>
+                    <p>Ta aplikacja służy wyłącznie do celów pokazowych. Administrator nie ponosi odpowiedzialności za utracone dane lub jakiekolwiek inne problemy związane z korzystaniem z aplikacji.</p>
+                </div>
+        </footer>
     </div>
 
     <script src="lista.js"></script>
