@@ -1,0 +1,22 @@
+{
+  "short_name": "1GroAllPho",
+  "name": "Moja Lista Zakupów",
+  "icons": [
+    {
+      "src": "../public/media/logolista.webp",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "../public/media/logolista.webp",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/lista/lista.html",
+  "background_color": "#d2b48c",
+  "theme_color": "#8B4513",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/lista/"
+}

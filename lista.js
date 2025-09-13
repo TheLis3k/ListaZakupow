@@ -1223,79 +1223,82 @@ const ShoppingListApp = (() => {
      * Render shopping list with optimized DOM manipulation
      * Different rendering for normal mode vs edit mode
      */
-    const renderShoppingList = () => {
-        const fragment = document.createDocumentFragment();
-        elements.shoppingItems.innerHTML = '';
+const renderShoppingList = () => {
+    const fragment = document.createDocumentFragment();
+    elements.shoppingItems.innerHTML = '';
 
-        if (shoppingList.length === 0) {
-            const emptyItem = document.createElement('li');
-            emptyItem.className = 'empty-list';
-            emptyItem.innerHTML = `
-                <i>📋</i>
-                <div>Twoja lista zakupów jest pusta</div>
-                <div>Dodaj pierwszy produkt powyżej</div>
-            `;
-            fragment.appendChild(emptyItem);
-        } else {
-            shoppingList.forEach((item, index) => {
-                const li = document.createElement('li');
-                li.setAttribute('data-id', item.id);
-                
-                if (isEditingMode) {
-                    // Edit mode rendering
-                        let optionsHtml = '';
-                        const units = ['szt', 'kg', 'g', 'l', 'ml', 'opak', 'inna'];
-                        units.forEach(u => {
-                            optionsHtml += `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`;
-                        });
+    if (shoppingList.length === 0) {
+        const emptyItem = document.createElement('li');
+        emptyItem.className = 'empty-list';
+        emptyItem.innerHTML = `
+            <i>📋</i>
+            <div>Twoja lista zakupów jest pusta</div>
+            <div>Dodaj pierwszy produkt powyżej</div>
+        `;
+        fragment.appendChild(emptyItem);
+    } else {
+        shoppingList.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.setAttribute('data-id', item.id);
+            
+            if (isEditingMode) {
+                // Edit mode rendering (pozostaw bez zmian)
+                let optionsHtml = '';
+                const units = ['szt', 'kg', 'g', 'l', 'ml', 'opak', 'inna'];
+                units.forEach(u => {
+                    optionsHtml += `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`;
+                });
 
-                        li.innerHTML = `
-                            <form class="edit-item-form" onsubmit="return false;">
-                                <input type="text" class="edit-item-name" value="${Utils.escapeHtml(item.text)}" 
-                                    onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'text', this.value)">
-                                <input type="number" class="edit-item-quantity" value="${item.quantity}" min="1" 
-                                    onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'quantity', this.value)">
-                                <select class="edit-item-unit" onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'unit', this.value)">
-                                    ${optionsHtml}
-                                </select>
-                                <textarea class="edit-item-description" placeholder="Opcjonalny opis..."
-                                    onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'description', this.value)">${Utils.escapeHtml(item.description || '')}</textarea>
-                                <button type="button" class="btn-danger remove-item-btn" 
-                                    onclick="window.ShoppingListApp.removeItemDuringEditing(${item.id})">
-                                    Usuń
-                                </button>
-                            </form>
-                        `;
-                } else {
-                    // Normal mode rendering
-                    const completedClass = item.completed ? 'item-completed' : '';
-                    li.innerHTML = `
-                        <div class="item-main">
-                            <div class="item-details">
-                                <input type="checkbox" class="item-checkbox" 
-                                    ${item.completed ? 'checked' : ''}>
-                                <div class="item-name ${completedClass}">
-                                    ${Utils.escapeHtml(item.text)}
-                                </div>
-                                <div class="item-quantity-container">
-                                    <span>${item.quantity} ${item.unit}</span>
-                                </div>
+                li.innerHTML = `
+                    <form class="edit-item-form" onsubmit="return false;">
+                        <input type="text" class="edit-item-name" value="${Utils.escapeHtml(item.text)}" 
+                            onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'text', this.value)">
+                        <input type="number" class="edit-item-quantity" value="${item.quantity}" min="1" 
+                            onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'quantity', this.value)">
+                        <select class="edit-item-unit" onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'unit', this.value)">
+                            ${optionsHtml}
+                        </select>
+                        <textarea class="edit-item-description" placeholder="Opcjonalny opis..."
+                            onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'description', this.value)">${Utils.escapeHtml(item.description || '')}</textarea>
+                        <button type="button" class="btn-danger remove-item-btn" 
+                            onclick="window.ShoppingListApp.removeItemDuringEditing(${item.id})">
+                            Usuń
+                        </button>
+                    </form>
+                `;
+            } else {
+                // Normal mode rendering z debugowaniem
+                const completedClass = item.completed ? 'item-completed' : '';
+                li.innerHTML = `
+                    <div class="item-main">
+                        <div class="item-details" style="display: flex; flex-direction: row; align-items: center;">
+                            <input type="checkbox" class="item-checkbox" 
+                                ${item.completed ? 'checked' : ''} 
+                                onclick="window.ShoppingListApp.toggleItem(${item.id})" 
+                                style="margin: 0 8px 0 0; width: 20px; height: 20px;">
+                            <div class="item-name ${completedClass}" style="flex: 1; overflow: hidden; text-overflow: ellipsis; min-width: 120px;">
+                                ${Utils.escapeHtml(item.text)}
                             </div>
-                            ${item.description ? `
-                                <div class="item-description">
-                                    ${Utils.escapeHtml(item.description)}
-                                </div>
-                            ` : ''}
+                            <div class="item-quantity-container" style="flex-shrink: 0; white-space: nowrap;">
+                                <span>${item.quantity} ${item.unit}</span>
+                            </div>
                         </div>
-                    `;
-                }
-                
-                fragment.appendChild(li);
-            });
-        }
-        
-        elements.shoppingItems.appendChild(fragment);
-    };
+                        ${item.description ? `
+                            <div class="item-description">
+                                ${Utils.escapeHtml(item.description)}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                console.log(`Rendering item ${item.id}: Checkbox should be left, Name: ${item.text}`);
+            }
+            
+            fragment.appendChild(li);
+        });
+    }
+    
+    elements.shoppingItems.appendChild(fragment);
+};
 
     // Public methods (exposed for onclick handlers)
     return {
@@ -1312,3 +1315,14 @@ document.addEventListener('DOMContentLoaded', function() {
     ShoppingListApp.init();
 })();
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/lista/sw.js')
+      .then((registration) => {
+        console.log('Service Worker zarejestrowany z zakresem:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('Błąd rejestracji Service Worker:', error);
+      });
+  });
+}

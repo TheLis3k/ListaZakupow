@@ -1208,38 +1208,84 @@ body.darkmodern-theme .item-description {
 
 /* ===== MOBILE RESPONSIVENESS ===== */
 @media (max-width: 480px) {
-    .action-modal {
-        width: 90%;
-        max-width: 300px;
-    }
-    
-    .action-modal-buttons {
-        grid-template-columns: 1fr;
-    }
-    
-    .action-modal-buttons button:last-child {
-        grid-column: span 1;
+    .item-details {
+        display: -webkit-box !important; /* Alternatywa dla flex w Brave */
+        display: -ms-flexbox !important; /* Prefiks dla IE/Edge */
+        display: flex !important; /* Flex dla wszystkich */
+        -webkit-box-orient: horizontal !important; /* Prefiks */
+        -ms-flex-direction: row !important; /* Prefiks */
+        flex-direction: row !important; /* Układ poziomy */
+        -webkit-box-pack: start !important; /* Prefiks */
+        -ms-flex-pack: start !important; /* Prefiks */
+        justify-content: flex-start !important; /* Rozpoczyna od lewej */
+        -webkit-box-align: center !important; /* Prefiks */
+        -ms-flex-align: center !important; /* Prefiks */
+        align-items: center !important; /* Wyrównanie w pionie */
+        -webkit-box-lines: single !important; /* Prefiks */
+        -ms-flex-wrap: nowrap !important; /* Prefiks */
+        flex-wrap: nowrap !important; /* Zapobiega zawijaniu */
+        gap: 8px !important; /* Stały odstęp */
+        min-height: 40px !important; /* Stabilna wysokość */
+        padding: 0 !important; /* Usuwa padding */
+        margin: 0 !important; /* Usuwa marginesy */
+        width: 100% !important; /* Pełna szerokość */
+        box-sizing: border-box !important; /* Uwzględnia padding/border */
+        -webkit-box-sizing: border-box !important; /* Prefiks */
     }
 
-    .item-details {
-        flex-wrap: nowrap; /* Zapobiega zawijaniu */
-        gap: 5px; /* Mniejszy odstęp na mobile */
-        align-items: center;
-    }
-    
-    .item-name {
-        flex: 1; /* Nazwa zajmuje resztę miejsca */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; /* Skraca długie nazwy z ... */
-    }
-    
-    .item-quantity-container {
-        white-space: nowrap; /* Ilość nie zawija się */
-    }
-    
     .item-checkbox {
-        flex-shrink: 0; /* Checkbox nie zmniejsza się */
+        -webkit-box-ordinal-group: 1 !important; /* Prefiks */
+        -ms-flex-order: 1 !important; /* Prefiks */
+        order: 1 !important; /* Checkbox jako pierwszy */
+        flex-shrink: 0 !important; /* Nie zmniejsza się */
+        -webkit-flex-shrink: 0 !important; /* Prefiks */
+        margin: 0 8px 0 0 !important; /* Tylko prawy margines */
+        padding: 0 !important; /* Usuwa padding */
+        width: 20px !important; /* Stała szerokość */
+        height: 20px !important; /* Stała wysokość */
+        -webkit-appearance: checkbox !important; /* Reset dla Webkit */
+        appearance: checkbox !important; /* Reset dla wszystkich */
+    }
+
+    .item-name {
+        -webkit-box-ordinal-group: 2 !important; /* Prefiks */
+        -ms-flex-order: 2 !important; /* Prefiks */
+        order: 2 !important; /* Nazwa po checkboxie */
+        flex: 1 !important; /* Zajmuje resztę miejsca */
+        -webkit-flex: 1 !important; /* Prefiks */
+        white-space: nowrap !important; /* Brak zawijania */
+        overflow: hidden !important; /* Ukrywa nadmiar */
+        text-overflow: ellipsis !important; /* Skraca z ... */
+        min-width: 120px !important; /* Większa minimalna szerokość */
+        margin: 0 !important; /* Usuwa marginesy */
+        padding: 0 4px !important; /* Minimalny padding */
+        font-size: 16px !important; /* Czytelna czcionka */
+    }
+
+    .item-quantity-container {
+        -webkit-box-ordinal-group: 3 !important; /* Prefiks */
+        -ms-flex-order: 3 !important; /* Prefiks */
+        order: 3 !important; /* Ilość na końcu */
+        flex-shrink: 0 !important; /* Nie zmniejsza się */
+        -webkit-flex-shrink: 0 !important; /* Prefiks */
+        white-space: nowrap !important; /* Brak zawijania */
+        margin: 0 !important; /* Usuwa marginesy */
+        padding: 0 4px !important; /* Minimalny padding */
+        font-size: 14px !important; /* Czytelna czcionka */
+    }
+
+    /* Resetowanie stylów motywów na mobile */
+    body.modern-theme .item-details,
+    body.darkmodern-theme .item-details {
+        display: -webkit-box !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
+        -webkit-box-orient: horizontal !important;
+        -ms-flex-direction: row !important;
+        flex-direction: row !important;
+        -webkit-box-lines: single !important;
+        -ms-flex-wrap: nowrap !important;
+        flex-wrap: nowrap !important;
     }
 }
 
