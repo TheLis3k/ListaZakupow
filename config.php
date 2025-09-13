@@ -5,10 +5,10 @@ ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 // Database configuration
-define('DB_HOST', 'Its');
-define('DB_NAME', 'Mine');
-define('DB_USER', 'Data');
-define('DB_PASS', 'Base');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'srv92460_lista');
+define('DB_USER', 'srv92460_Aplikacja');
+define('DB_PASS', 'Serniczek12345%$#@!');
 //im not sharing this one on GitHub 
 
 

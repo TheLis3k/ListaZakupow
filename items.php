@@ -92,15 +92,29 @@ try {
             sendJsonResponse($item, 201);
             break;
             
+
         case 'PUT':
-            // Update existing item
+            $action = $_GET['action'] ?? null;
             $itemId = $_GET['id'] ?? null;
-            
-            if (!$itemId || !is_numeric($itemId)) {
-                sendJsonResponse(['error' => 'Valid item ID is required'], 400);
-                break;
-            }
-            
+
+            if ($itemId) {
+                // Single item update
+                $data = json_decode(file_get_contents('php://input'), true);
+                $updates = array_intersect_key($data, array_flip(['text', 'quantity', 'unit', 'description', 'completed']));
+
+                $stmt = $db->prepare('UPDATE shopping_items SET updated_at = NOW(), ' . implode(' = ?, ', array_keys($updates)) . ' = ? WHERE id = ? AND user_id = ?');
+                $values = array_values($updates);
+                $values[] = $itemId;
+                $values[] = $userId;
+                $stmt->execute($values);
+
+                if ($stmt->rowCount() === 0) {
+                    sendJsonResponse(['error' => 'Item not found'], 404);
+                } else {
+                    sendJsonResponse(['message' => 'Item updated successfully']);
+                }
+            } elseif ($action === 'replace') {
+            // Handle bulk replace operation
             $data = json_decode(file_get_contents('php://input'), true);
             
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -108,81 +122,69 @@ try {
                 break;
             }
             
-            // Check if item belongs to user
-            $stmt = $db->prepare('SELECT id FROM shopping_items WHERE id = :id AND user_id = :user_id');
-            $stmt->bindValue(':id', $itemId, PDO::PARAM_INT);
-            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
-            $stmt->execute();
+            $items = $data['items'] ?? [];
             
-            if (!$stmt->fetch()) {
-                sendJsonResponse(['error' => 'Item not found'], 404);
-                break;
-            }
-            
-            // Build update query dynamically based on provided fields
-            $updates = [];
-            $params = [':id' => $itemId];
-            
-            if (isset($data['text'])) {
-                $text = trim($data['text']);
-                if (empty($text)) {
-                    sendJsonResponse(['error' => 'Item text cannot be empty'], 400);
-                    break;
-                }
-                $updates[] = 'text = :text';
-                $params[':text'] = $text;
-            }
-            
-            if (isset($data['quantity'])) {
-                $quantity = intval($data['quantity']);
-                if ($quantity < 1) {
-                    sendJsonResponse(['error' => 'Quantity must be at least 1'], 400);
-                    break;
-                }
-                $updates[] = 'quantity = :quantity';
-                $params[':quantity'] = $quantity;
-            }
-            
-            if (isset($data['unit'])) {
-                $updates[] = 'unit = :unit';
-                $params[':unit'] = $data['unit'];
-            }
-            
-            if (isset($data['description'])) {
-                $updates[] = 'description = :description';
-                $params[':description'] = trim($data['description']);
-            }
-            
-            if (isset($data['completed'])) {
-                $updates[] = 'completed = :completed';
-                $params[':completed'] = boolval($data['completed']);
+            // Validate each item before proceeding
+            foreach ($items as $item) {
+                $text = trim($item['text'] ?? '');
+                $quantity = intval($item['quantity'] ?? 1);
                 
-                if ($data['completed']) {
-                    $updates[] = 'completed_at = NOW()';
-                } else {
-                    $updates[] = 'completed_at = NULL';
+                if (empty($text)) {
+                    sendJsonResponse(['error' => 'Item text is required for all items'], 400);
+                    break 2; // Exit the switch
+                }
+                
+                if ($quantity < 1) {
+                    sendJsonResponse(['error' => 'Quantity must be at least 1 for all items'], 400);
+                    break 2; // Exit the switch
+                }
+                
+                // Optional: Add more checks, e.g., for valid units
+                $validUnits = ['szt', 'kg', 'g', 'l', 'ml', 'opak', 'inna'];
+                if (!in_array($item['unit'] ?? '', $validUnits)) {
+                    sendJsonResponse(['error' => 'Invalid unit for one or more items'], 400);
+                    break 2; // Exit the switch
                 }
             }
             
-            if (empty($updates)) {
-                sendJsonResponse(['error' => 'No fields to update'], 400);
-                break;
+            try {
+                $db->beginTransaction();
+                
+                // Delete all existing items
+                $stmt = $db->prepare('DELETE FROM shopping_items WHERE user_id = :user_id');
+                $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+                $stmt->execute();
+                
+                // Insert new items (now validated)
+                $stmt = $db->prepare('
+                    INSERT INTO shopping_items 
+                    (user_id, text, quantity, unit, description, completed, added_at)
+                    VALUES 
+                    (:user_id, :text, :quantity, :unit, :description, :completed, NOW())
+                ');
+                
+                foreach ($items as $item) {
+                    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+                    $stmt->bindValue(':text', trim($item['text']), PDO::PARAM_STR);
+                    $stmt->bindValue(':quantity', intval($item['quantity']), PDO::PARAM_INT);
+                    $stmt->bindValue(':unit', $item['unit'] ?? 'szt', PDO::PARAM_STR);
+                    $stmt->bindValue(':description', trim($item['description'] ?? ''), PDO::PARAM_STR);
+                    $stmt->bindValue(':completed', boolval($item['completed'] ?? false), PDO::PARAM_BOOL);
+                    $stmt->execute();
+                }
+                
+                $db->commit();
+                sendJsonResponse(['message' => 'List replaced successfully']);
+                
+            } catch (Exception $e) {
+                $db->rollBack();
+                sendJsonResponse(['error' => 'Failed to replace list: ' . $e->getMessage()], 500);
             }
             
-            $updates[] = 'updated_at = NOW()';
-            
-            $query = 'UPDATE shopping_items SET ' . implode(', ', $updates) . ' WHERE id = :id';
-            $stmt = $db->prepare($query);
-            
-            foreach ($params as $key => $value) {
-                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
-                $stmt->bindValue($key, $value, $paramType);
-            }
-            
-            $stmt->execute();
-            
-            sendJsonResponse(['message' => 'Item updated successfully']);
             break;
+    }
+    
+
             
         case 'DELETE':
             // Delete item or perform bulk operations

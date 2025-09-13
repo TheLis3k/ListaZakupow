@@ -60,7 +60,7 @@ const DatabaseModule = (() => {
             
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                const errorMessage = errorData.message || `HTTP error! status: ${response.status}`;
+                const errorMessage = errorData.error || errorData.message || `HTTP error! status: ${response.status}`;
                 throw new Error(errorMessage);
             }
             
@@ -98,9 +98,9 @@ const DatabaseModule = (() => {
     };
 
     const deleteItem = async (id) => {
+        console.log('Deleting item with ID:', id);
         return apiRequest(`/items.php?id=${id}`, 'DELETE');
     };
-
     const removeCheckedItems = async () => {
         return apiRequest('/items.php?action=remove_checked', 'DELETE');
     };
@@ -199,7 +199,6 @@ const SessionManager = (() => {
     
     /**
      * Save user session data with remember me preference
-     * Uses localStorage for "remember me" and sessionStorage for temporary sessions
      */
     const saveSession = (userData, rememberMe = false) => {
         try {
@@ -212,10 +211,8 @@ const SessionManager = (() => {
             if (rememberMe) {
                 localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
                 localStorage.setItem(USER_KEY, JSON.stringify(userData));
-                sessionStorage.removeItem(SESSION_KEY);
             } else {
                 sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
-                localStorage.removeItem(SESSION_KEY);
             }
             
             localStorage.setItem(REMEMBER_ME_KEY, rememberMe.toString());
@@ -228,7 +225,6 @@ const SessionManager = (() => {
     
     /**
      * Get stored session data
-     * Checks both sessionStorage and localStorage
      */
     const getSession = () => {
         try {
@@ -288,17 +284,13 @@ const SessionManager = (() => {
     
     /**
      * Check if session is still valid based on remember me preference
-     * For "remember me" sessions, valid for 7 days
-     * For temporary sessions, valid until browser is closed
      */
     const isSessionValid = () => {
         const session = getSession();
         if (!session) return false;
         
-        const rememberMe = getRememberMe();
-        
         // If remember me is enabled, session is valid for 7 days
-        if (rememberMe) {
+        if (session.rememberMe) {
             const oneWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
             return (Date.now() - session.timestamp) < oneWeek;
         }
@@ -464,7 +456,7 @@ const ShoppingListApp = (() => {
         }
     };
 
-    // Bind event listeners with debouncing where appropriate
+    // Bind event listeners
     const bindEvents = () => {
         // Tab switching
         elements.tabs.forEach(tab => {
@@ -482,16 +474,16 @@ const ShoppingListApp = (() => {
         elements.btnLogin.addEventListener('click', login);
         elements.btnLogout.addEventListener('click', logout);
 
-        // Shopping list management with debounced input
+        // Shopping list management
         elements.btnAddItem.addEventListener('click', addItem);
         elements.newItemInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addItem();
         });
         
-        // Debounced refresh to prevent multiple rapid clicks
+        // Debounced refresh
         elements.btnRefresh.addEventListener('click', Utils.debounce(refreshList, 300));
         
-        // Password strength indicator with debounced updates
+        // Password strength indicator
         elements.registerPassword.addEventListener('input', 
             Utils.debounce(updatePasswordStrength, 300));
         
@@ -518,7 +510,7 @@ const ShoppingListApp = (() => {
     /**
      * Check if there's a saved valid session
      */
-    const checkSavedSession = () => {
+    const checkSavedSession = async () => {
         const savedUser = SessionManager.getUser();
         const isSessionValid = SessionManager.isSessionValid();
         const rememberMe = SessionManager.getRememberMe();
@@ -529,23 +521,35 @@ const ShoppingListApp = (() => {
         }
         
         if (savedUser && isSessionValid) {
-            // Auto-login with saved user data
-            currentUser = savedUser;
-            updateUIAfterLogin();
-            showNotification('Automatyczne logowanie powiodło się', 'success');
-            
-            // Load shopping list after automatic login
-            loadShoppingList();
+            try {
+                // Verify session with server by attempting to load the shopping list
+                currentUser = savedUser;
+                updateUIAfterLogin();
+                
+                // Try to load shopping list to verify session is still valid on server
+                await loadShoppingList();
+                showNotification('Automatyczne logowanie powiodło się', 'success');
+            } catch (error) {
+                // Session invalid on server
+                SessionManager.clearSession();
+                currentUser = null;
+                updateUIAfterLogout();
+                showNotification('Sesja wygasła. Zaloguj się ponownie.', 'info');
+                
+                // Pre-fill username if available
+                if (savedUser && savedUser.username) {
+                    elements.loginUsername.value = savedUser.username;
+                }
+            }
         } else if (savedUser && !isSessionValid) {
             // Session expired
             SessionManager.clearSession();
             showNotification('Sesja wygasła. Zaloguj się ponownie.', 'info');
-        }
-        
-        // Pre-fill username if available
-        if (savedUser) {
-            elements.loginUsername.value = savedUser.username || '';
-            elements.registerUsername.value = savedUser.username || '';
+            
+            // Pre-fill username
+            if (savedUser.username) {
+                elements.loginUsername.value = savedUser.username;
+            }
         }
     };
     
@@ -557,27 +561,13 @@ const ShoppingListApp = (() => {
         SessionManager.saveSession(userData, rememberMe);
     };
 
-    // ===== NETWORK STATUS HANDLING =====
-    
-    /**
-     * Check network status and show appropriate message
-     */
-    const checkNetworkStatus = () => {
-        const isOnline = DatabaseModule.checkNetworkStatus();
-        if (!isOnline) {
-            showNotification('Brak połączenia internetowego', 'error');
-        }
-        return isOnline;
-    };
-
     // ===== EVENT HANDLERS =====
     
     /**
      * Handle item click event with event delegation
-     * Only handles checkbox clicks in normal mode
      */
     const handleItemClick = (e) => {
-        // Only handle checkbox clicks in normal mode
+        // Don't handle clicks in edit mode
         if (isEditingMode) return;
         
         const listItem = e.target.closest('li');
@@ -587,6 +577,12 @@ const ShoppingListApp = (() => {
         if (e.target.classList.contains('item-checkbox')) {
             const id = parseInt(listItem.dataset.id);
             toggleItem(id);
+        }
+        
+        // Check if delete button was clicked (for individual items)
+        if (e.target.classList.contains('item-delete')) {
+            const id = parseInt(listItem.dataset.id);
+            deleteItem(id);
         }
     };
 
@@ -604,9 +600,6 @@ const ShoppingListApp = (() => {
         // Clear form fields
         elements.loginUsername.value = '';
         elements.loginPassword.value = '';
-        
-        // Load shopping list
-        loadShoppingList();
     };
     
     /**
@@ -688,22 +681,20 @@ const ShoppingListApp = (() => {
      * Clear entire shopping list with confirmation
      */
     const clearList = async () => {
-        confirmAction(
-            'Czy na pewno chcesz wyczyścić całą listę? Tej operacji nie można cofnąć.',
-            'Wyczyść listę',
-            async () => {
-                try {
-                    await DatabaseModule.clearList();
-                    shoppingList = [];
-                    renderShoppingList();
-                    showNotification('Lista wyczyszczona', 'success');
-                    closeSettings();
-                } catch (error) {
-                    console.error('Error clearing list:', error);
-                    showNotification('Błąd podczas czyszczenia listy: ' + error.message, 'error');
-                }
-            }
-        );
+        if (!confirm('Czy na pewno chcesz wyczyścić całą listę? Tej operacji nie można cofnąć.')) {
+            return;
+        }
+        
+        try {
+            await DatabaseModule.clearList();
+            shoppingList = [];
+            renderShoppingList();
+            showNotification('Lista wyczyszczona', 'success');
+            closeSettings();
+        } catch (error) {
+            console.error('Error clearing list:', error);
+            showNotification('Błąd podczas czyszczenia listy: ' + error.message, 'error');
+        }
     };
 
     /**
@@ -717,22 +708,39 @@ const ShoppingListApp = (() => {
             return;
         }
         
-        confirmAction(
-            `Czy na pewno chcesz usunąć ${checkedItems.length} zaznaczonych produktów?`,
-            'Usuń zaznaczone',
-            async () => {
-                try {
-                    await DatabaseModule.removeCheckedItems();
-                    shoppingList = shoppingList.filter(item => !item.completed);
-                    renderShoppingList();
-                    showNotification(`Usunięto ${checkedItems.length} produktów`, 'success');
-                    closeSettings();
-                } catch (error) {
-                    console.error('Error removing checked items:', error);
-                    showNotification('Błąd podczas usuwania zaznaczonych produktów: ' + error.message, 'error');
-                }
-            }
-        );
+        if (!confirm(`Czy na pewno chcesz usunąć ${checkedItems.length} zaznaczonych produktów?`)) {
+            return;
+        }
+        
+        try {
+            await DatabaseModule.removeCheckedItems();
+            shoppingList = shoppingList.filter(item => !item.completed);
+            renderShoppingList();
+            showNotification(`Usunięto ${checkedItems.length} produktów`, 'success');
+            closeSettings();
+        } catch (error) {
+            console.error('Error removing checked items:', error);
+            showNotification('Błąd podczas usuwania zaznaczonych produktów: ' + error.message, 'error');
+        }
+    };
+
+    /**
+     * Delete individual item
+     */
+    const deleteItem = async (id) => {
+        if (!confirm('Czy na pewno chcesz usunąć ten produkt?')) {
+            return;
+        }
+        
+        try {
+            await DatabaseModule.deleteItem(id);
+            shoppingList = shoppingList.filter(item => item.id !== id);
+            renderShoppingList();
+            showNotification('Produkt usunięty', 'success');
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            showNotification('Błąd podczas usuwania produktu: ' + error.message, 'error');
+        }
     };
 
     // ===== LIST EDITING FUNCTIONS =====
@@ -815,30 +823,44 @@ const ShoppingListApp = (() => {
     /**
      * Remove item from the list during editing
      */
-    const removeItemDuringEditing = (index) => {
-        if (confirm('Czy na pewno chcesz usunąć ten produkt z listy?')) {
-            shoppingList.splice(index, 1);
-            renderShoppingList();
-            showNotification('Produkt usunięty', 'info');
-        }
-    };
+        const removeItemDuringEditing = async (id) => {
+            const index = shoppingList.findIndex(item => item.id === id);
+            if (index === -1) {
+                console.error('Item not found:', id);
+                return;
+            }
+            try {
+                await DatabaseModule.deleteItem(id);
+                shoppingList.splice(index, 1);
+                renderShoppingList();
+                showNotification('Produkt usunięty', 'success');
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                showNotification('Błąd podczas usuwania: ' + error.message, 'error');
+            }
+        };
     
     /**
      * Update item during editing
      */
-    const updateItemDuringEditing = (index, field, value) => {
-        if (field === 'quantity' && (isNaN(value) || value < 1)) {
-            showNotification('Ilość musi być liczbą większą od 0', 'error');
-            return;
-        }
-        
-        if (field === 'text' && !value.trim()) {
-            showNotification('Nazwa produktu nie może być pusta', 'error');
-            return;
-        }
-        
-        shoppingList[index][field] = value;
-    };
+        const updateItemDuringEditing = async (id, field, value) => {
+            const index = shoppingList.findIndex(item => item.id === id);
+            if (index === -1) {
+                console.error('Item not found:', id);
+                return;
+            }
+            shoppingList[index][field] = (field === 'quantity') ? parseInt(value) || 1 : value; // Walidacja dla quantity
+            try {
+                await DatabaseModule.updateItem(id, { [field]: shoppingList[index][field] });
+                renderShoppingList(); // Re-render po zmianie
+                showNotification('Zmiana zapisana', 'success');
+            } catch (error) {
+                console.error('Error updating item:', error);
+                showNotification('Błąd podczas aktualizacji: ' + error.message, 'error');
+                // Opcjonalnie: revert zmiany lokalnie
+                renderShoppingList();
+            }
+        };
 
     // ===== AUTHENTICATION FUNCTIONS =====
     
@@ -859,11 +881,11 @@ const ShoppingListApp = (() => {
     };
 
     /**
-     * Update password strength indicator with detailed feedback
+     * Update password strength indicator
      */
     const updatePasswordStrength = () => {
         const password = elements.registerPassword.value;
-        const { strength, feedback, requirements } = PasswordStrength.checkStrength(password);
+        const { strength, feedback } = PasswordStrength.checkStrength(password);
         
         // Update strength bar
         let width = 0;
@@ -884,7 +906,7 @@ const ShoppingListApp = (() => {
     };
 
     /**
-     * Show notification message with different types
+     * Show notification message
      */
     const showNotification = (message, type = 'info', duration = 3000) => {
         // Clear any existing notifications
@@ -908,16 +930,6 @@ const ShoppingListApp = (() => {
             clearTimeout(elements.notification.timeoutId);
         }
         elements.notification.style.display = 'none';
-    };
-
-    /**
-     * Show confirmation dialog for destructive actions
-     */
-    const confirmAction = (message, title, confirmCallback) => {
-        // Use native browser confirmation for simplicity
-        if (window.confirm(message)) {
-            confirmCallback();
-        }
     };
 
     /**
@@ -1005,17 +1017,24 @@ const ShoppingListApp = (() => {
         setLoading('register', true);
         
         try {
-            await DatabaseModule.registerUser(username, password);
+            const response = await DatabaseModule.registerUser(username, password);
             
-            showNotification('Konto zostało utworzone. Możesz się zalogować.', 'success');
+            // Automatically log in after registration
+            currentUser = { username: response.username };
+            saveUserSession(currentUser);
             
-            // Switch to login tab and clear fields
-            switchTab('login');
+            updateUIAfterLogin();
+            showNotification('Konto zostało utworzone i zostałeś automatycznie zalogowany', 'success');
+            
+            // Clear registration form
             elements.registerUsername.value = '';
             elements.registerPassword.value = '';
             elements.registerConfirm.value = '';
             elements.passwordStrengthBar.style.width = '0';
             elements.passwordFeedback.textContent = '';
+            
+            // Load shopping list
+            loadShoppingList();
         } catch (error) {
             console.error('Registration error:', error);
             showNotification('Rejestracja nie powiodła się: ' + error.message, 'error');
@@ -1096,11 +1115,21 @@ const ShoppingListApp = (() => {
         
         try {
             const items = await DatabaseModule.getShoppingList();
-            shoppingList = items;
+            shoppingList = items || [];
             renderShoppingList();
         } catch (error) {
             console.error('Error loading shopping list:', error);
-            showNotification('Błąd podczas ładowania listy: ' + error.message, 'error');
+            
+            // Check if it's an authentication error
+            if (error.message.includes('401') || error.message.includes('Nieautoryzowany')) {
+                // Session invalid on server
+                SessionManager.clearSession();
+                currentUser = null;
+                updateUIAfterLogout();
+                showNotification('Sesja wygasła. Zaloguj się ponownie.', 'info');
+            } else {
+                showNotification('Błąd podczas ładowania listy: ' + error.message, 'error');
+            }
             shoppingList = [];
             renderShoppingList();
         }
@@ -1119,7 +1148,7 @@ const ShoppingListApp = (() => {
      */
     const addItem = async () => {
         const itemText = elements.newItemInput.value.trim();
-        const itemQuantity = elements.newQuantityInput.value;
+        const itemQuantity = parseInt(elements.newQuantityInput.value);
         const itemUnit = elements.newUnitSelect.value;
         const itemDescription = elements.newDescriptionInput.value.trim();
         
@@ -1144,17 +1173,10 @@ const ShoppingListApp = (() => {
             };
             
             const result = await DatabaseModule.addItem(newItem);
+            console.log('Added item with ID:', result.id); // Debug log
             
-            // Add new item to local list
-            shoppingList.push({
-                id: result.id,
-                text: itemText,
-                quantity: itemQuantity,
-                unit: itemUnit,
-                description: itemDescription,
-                completed: false,
-                addedAt: new Date().toISOString()
-            });
+            // Add new item to local list with the returned data
+            shoppingList.push(result);
             
             // Clear fields and refresh list
             elements.newItemInput.value = '';
@@ -1174,26 +1196,26 @@ const ShoppingListApp = (() => {
      */
     const toggleItem = async (id) => {
         const item = shoppingList.find(item => item.id === id);
-        if (item) {
-            const completed = !item.completed;
-            
-            try {
-                await DatabaseModule.updateItem(id, { completed });
-                
-                item.completed = completed;
-                if (item.completed) {
-                    item.completedAt = new Date().toISOString();
-                } else {
-                    delete item.completedAt;
-                }
-                renderShoppingList();
-            } catch (error) {
-                console.error('Error toggling item:', error);
-                showNotification('Błąd podczas aktualizacji produktu: ' + error.message, 'error');
-                // Revert UI change
-                item.completed = !completed;
-                renderShoppingList();
+        if (!item) {
+            console.error('Item not found in local list:', id);
+            showNotification('Item not found', 'error');
+            return;
+        }
+        
+        const newCompleted = !item.completed;
+        
+        try {
+            await DatabaseModule.updateItem(id, { completed: newCompleted });
+            item.completed = newCompleted;
+            if (item.completed) {
+                item.completed_at = new Date().toISOString();
+            } else {
+                delete item.completed_at;
             }
+            renderShoppingList();
+        } catch (error) {
+            console.error('Error toggling item:', error, 'ID:', id);
+            showNotification('Błąd podczas aktualizacji produktu: ' + error.message, 'error');
         }
     };
 
@@ -1202,127 +1224,91 @@ const ShoppingListApp = (() => {
      * Different rendering for normal mode vs edit mode
      */
     const renderShoppingList = () => {
-        // Use document fragment for better performance
         const fragment = document.createDocumentFragment();
-        
-        // Clear current list
         elements.shoppingItems.innerHTML = '';
-        
-        // Show message if list is empty
+
         if (shoppingList.length === 0) {
             const emptyItem = document.createElement('li');
             emptyItem.className = 'empty-list';
             emptyItem.innerHTML = `
-                <i>📝</i>
+                <i>📋</i>
                 <div>Twoja lista zakupów jest pusta</div>
                 <div>Dodaj pierwszy produkt powyżej</div>
             `;
             fragment.appendChild(emptyItem);
         } else {
-            // Create list elements for each product
             shoppingList.forEach((item, index) => {
                 const li = document.createElement('li');
                 li.setAttribute('data-id', item.id);
                 
                 if (isEditingMode) {
-                    // EDIT MODE RENDERING (bez zmian)
+                    // Edit mode rendering
+                        let optionsHtml = '';
+                        const units = ['szt', 'kg', 'g', 'l', 'ml', 'opak', 'inna'];
+                        units.forEach(u => {
+                            optionsHtml += `<option value="${u}" ${item.unit === u ? 'selected' : ''}>${u}</option>`;
+                        });
+
+                        li.innerHTML = `
+                            <form class="edit-item-form" onsubmit="return false;">
+                                <input type="text" class="edit-item-name" value="${Utils.escapeHtml(item.text)}" 
+                                    onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'text', this.value)">
+                                <input type="number" class="edit-item-quantity" value="${item.quantity}" min="1" 
+                                    onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'quantity', this.value)">
+                                <select class="edit-item-unit" onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'unit', this.value)">
+                                    ${optionsHtml}
+                                </select>
+                                <textarea class="edit-item-description" placeholder="Opcjonalny opis..."
+                                    onchange="window.ShoppingListApp.updateItemDuringEditing(${item.id}, 'description', this.value)">${Utils.escapeHtml(item.description || '')}</textarea>
+                                <button type="button" class="btn-danger remove-item-btn" 
+                                    onclick="window.ShoppingListApp.removeItemDuringEditing(${item.id})">
+                                    Usuń
+                                </button>
+                            </form>
+                        `;
+                } else {
+                    // Normal mode rendering
+                    const completedClass = item.completed ? 'item-completed' : '';
                     li.innerHTML = `
-                        <div class="edit-item-form">
-                            <input type="text" class="edit-item-name" value="${Utils.escapeHtml(item.text)}" 
-                                placeholder="Nazwa produktu" onchange="window.ShoppingListApp.updateItemDuringEditing(${index}, 'text', this.value)">
-                            
-                            <input type="number" class="edit-item-quantity" value="${item.quantity}" min="1" 
-                                onchange="window.ShoppingListApp.updateItemDuringEditing(${index}, 'quantity', this.value)">
-                            
-                            <select class="edit-item-unit" onchange="window.ShoppingListApp.updateItemDuringEditing(${index}, 'unit', this.value)">
-                                <option value="szt" ${item.unit === 'szt' ? 'selected' : ''}>szt</option>
-                                <option value="kg" ${item.unit === 'kg' ? 'selected' : ''}>kg</option>
-                                <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
-                                <option value="l" ${item.unit === 'l' ? 'selected' : ''}>l</option>
-                                <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
-                                <option value="opak" ${item.unit === 'opak' ? 'selected' : ''}>opak</option>
-                                <option value="inna" ${item.unit === 'inna' ? 'selected' : ''}>inna</option>
-                            </select>
-                            
-                            <textarea class="edit-item-description" placeholder="Opcjonalny opis..." 
-                                onchange="window.ShoppingListApp.updateItemDuringEditing(${index}, 'description', this.value)">${Utils.escapeHtml(item.description || '')}</textarea>
-                            
-                            <button class="btn-danger remove-item-btn" onclick="window.ShoppingListApp.removeItemDuringEditing(${index})">Usuń</button>
+                        <div class="item-main">
+                            <div class="item-details">
+                                <input type="checkbox" class="item-checkbox" 
+                                    ${item.completed ? 'checked' : ''}>
+                                <div class="item-name ${completedClass}">
+                                    ${Utils.escapeHtml(item.text)}
+                                </div>
+                                <div class="item-quantity-container">
+                                    <span>${item.quantity} ${item.unit}</span>
+                                </div>
+                            </div>
+                            ${item.description ? `
+                                <div class="item-description">
+                                    ${Utils.escapeHtml(item.description)}
+                                </div>
+                            ` : ''}
                         </div>
                     `;
-                } else {
-                    // NORMAL MODE RENDERING - ZMIENIONA STRUKTURA
-                    const itemMain = document.createElement('div');
-                    itemMain.className = 'item-main';
-                    
-                    // Completion status checkbox
-                    const itemCheckbox = document.createElement('input');
-                    itemCheckbox.type = 'checkbox';
-                    itemCheckbox.className = 'item-checkbox';
-                    itemCheckbox.checked = item.completed || false;
-                    
-                    // Product name with toggle completion capability
-                    const itemName = document.createElement('span');
-                    itemName.textContent = item.text;
-                    itemName.className = `item-name ${item.completed ? 'item-completed' : ''}`;
-                    
-                    // Quantity and unit container
-                    const itemQuantityContainer = document.createElement('div');
-                    itemQuantityContainer.className = 'item-quantity-container';
-                    itemQuantityContainer.textContent = `${item.quantity} ${item.unit}`;
-                    
-                    // Create container for text elements
-                    const textContainer = document.createElement('div');
-                    textContainer.className = 'item-text-container';
-                    
-                    // Add name to text container
-                    textContainer.appendChild(itemName);
-                    
-                    // Description (if exists) - TERAZ PO NAZWIE, PRZED ILOŚCIĄ
-                    if (item.description) {
-                        const itemDescription = document.createElement('div');
-                        itemDescription.textContent = item.description;
-                        itemDescription.className = 'item-description';
-                        textContainer.appendChild(itemDescription);
-                    }
-                    
-                    // Create main container for item details
-                    const itemDetails = document.createElement('div');
-                    itemDetails.className = 'item-details';
-                    itemDetails.appendChild(itemCheckbox);
-                    itemDetails.appendChild(textContainer);
-                    
-                    itemMain.appendChild(itemDetails);
-                    itemMain.appendChild(itemQuantityContainer);
-                    
-                    li.appendChild(itemMain);
                 }
                 
                 fragment.appendChild(li);
             });
         }
         
-        // Append all elements at once
         elements.shoppingItems.appendChild(fragment);
     };
 
-    // Public methods
+    // Public methods (exposed for onclick handlers)
     return {
         init,
-        startListEditing,
-        saveListChanges,
-        cancelListEditing,
         removeItemDuringEditing,
         updateItemDuringEditing
     };
 })();
 
-// ===== GLOBAL EXPORTS =====
 window.ShoppingListApp = ShoppingListApp;
-window.removeItemDuringEditing = ShoppingListApp.removeItemDuringEditing;
-window.updateItemDuringEditing = ShoppingListApp.updateItemDuringEditing;
 
 // ===== INITIALIZE APPLICATION =====
 document.addEventListener('DOMContentLoaded', function() {
     ShoppingListApp.init();
-});
+})();
+

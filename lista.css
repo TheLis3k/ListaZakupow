@@ -444,6 +444,26 @@ body.darkmodern-theme .tab.active::after {
     animation: slideIn 0.3s ease;
 }
 
+.item-checkbox:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.item-name:hover {
+    color: var(--primary-brown); /* Zmiana koloru tekstu */
+    transition: color 0.3s ease;
+}
+
+.item-quantity-container:hover {
+    font-weight: bold;
+    transition: font-weight 0.3s ease;
+}
+
+.shopping-items li:active {
+    background-color: rgba(139, 69, 19, 0.1);
+    transform: scale(0.98);
+}
+
 /* Modern list items */
 body.modern-theme .shopping-items li {
     border-bottom: 1px solid #dadce0;
@@ -457,8 +477,9 @@ body.darkmodern-theme .shopping-items li {
 }
 
 .shopping-items li:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
+    background-color: rgba(139, 69, 19, 0.05); 
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    transform: translateX(5px); 
 }
 
 .shopping-items li:last-child {
@@ -1198,6 +1219,27 @@ body.darkmodern-theme .item-description {
     
     .action-modal-buttons button:last-child {
         grid-column: span 1;
+    }
+
+    .item-details {
+        flex-wrap: nowrap; /* Zapobiega zawijaniu */
+        gap: 5px; /* Mniejszy odstęp na mobile */
+        align-items: center;
+    }
+    
+    .item-name {
+        flex: 1; /* Nazwa zajmuje resztę miejsca */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Skraca długie nazwy z ... */
+    }
+    
+    .item-quantity-container {
+        white-space: nowrap; /* Ilość nie zawija się */
+    }
+    
+    .item-checkbox {
+        flex-shrink: 0; /* Checkbox nie zmniejsza się */
     }
 }
 
